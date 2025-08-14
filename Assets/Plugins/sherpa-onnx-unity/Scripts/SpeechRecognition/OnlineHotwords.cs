@@ -41,7 +41,8 @@ namespace SherpaOnnxUnity
             modelPath = pathRoot + "/sherpa-onnx-streaming-conformer-zh-2023-05-23";
             if (!Directory.Exists(modelPath))
             {
-                Debug.LogError("文件夹不存在：" + modelPath);
+                Debug.LogError("语音识别模型文件夹不存在：" + modelPath);
+                return;
             }
             OnlineRecognizerConfig config = new OnlineRecognizerConfig();
             config.FeatConfig.SampleRate = sampleRate;
@@ -69,7 +70,13 @@ namespace SherpaOnnxUnity
             OfflinePunctuationConfig opc = new OfflinePunctuationConfig();
 
             OfflinePunctuationModelConfig opmc = new OfflinePunctuationModelConfig();
-            opmc.CtTransformer = Util.GetPath() + "/punctuation/sherpa-onnx-punct-ct-transformer-zh-en-vocab272727-2024-04-12-int8/model.int8.onnx";
+            string punctuationModelPath = Util.GetPath() + "/punctuation/sherpa-onnx-punct-ct-transformer-zh-en-vocab272727-2024-04-12-int8/model.int8.onnx";
+            if (!File.Exists(punctuationModelPath))
+            {
+                Debug.LogError("标点符号模型不存在");
+                return;
+            }
+            opmc.CtTransformer = punctuationModelPath;
             opmc.NumThreads = numThreads;
             opmc.Provider = "cpu";
             opmc.Debug = 0;
