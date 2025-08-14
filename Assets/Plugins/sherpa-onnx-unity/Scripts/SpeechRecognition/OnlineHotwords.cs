@@ -12,9 +12,9 @@ namespace SherpaOnnxUnity
         OnlineRecognizer recognizer = null;
         OnlineStream onlineStream = null;
         string tokensPath = "tokens.txt";
-        string encoder = "encoder-epoch-99-avg-1.onnx";
-        string decoder = "decoder-epoch-99-avg-1.onnx";
-        string joiner = "joiner-epoch-99-avg-1.onnx";
+        string encoder = "encoder-epoch-99-avg-1.int8.onnx";
+        string decoder = "decoder-epoch-99-avg-1.int8.onnx";
+        string joiner = "joiner-epoch-99-avg-1.int8.onnx";
         string decodingMethod = "modified_beam_search";
         int numThreads = 1;
 

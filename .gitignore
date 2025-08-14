@@ -9,5 +9,5 @@ Temp
 *.sln
 *.dwlt
 *.csproj
-Assets/StreamingAssets/asr
+Assets/StreamingAssets/asr/sherpa-onnx-streaming-conformer-zh-2023-05-23/encoder-epoch-99-avg-1.int8.onnx
 Assets/StreamingAssets/punctuation/sherpa-onnx-punct-ct-transformer-zh-en-vocab272727-2024-04-12
