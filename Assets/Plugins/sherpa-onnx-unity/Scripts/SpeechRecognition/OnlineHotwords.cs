@@ -1,5 +1,4 @@
 using SherpaOnnx;
-using System;
 using System.IO;
 using UnityEngine;
 
@@ -30,7 +29,7 @@ namespace SherpaOnnxUnity
         // Start is called before the first frame update
         void Start()
         {
-            pathRoot = Util.GetPath() + "/models";
+            pathRoot = Util.GetPath() + "/asr";
             Loom.RunAsync(() =>
             {
                 Init();
@@ -40,9 +39,9 @@ namespace SherpaOnnxUnity
         void Init()
         {
             modelPath = pathRoot + "/sherpa-onnx-streaming-conformer-zh-2023-05-23";
-            if (!File.Exists(modelPath))
+            if (!Directory.Exists(modelPath))
             {
-                Debug.LogError("文件不存在：" + modelPath);
+                Debug.LogError("文件夹不存在：" + modelPath);
             }
             OnlineRecognizerConfig config = new OnlineRecognizerConfig();
             config.FeatConfig.SampleRate = sampleRate;
@@ -70,7 +69,7 @@ namespace SherpaOnnxUnity
             OfflinePunctuationConfig opc = new OfflinePunctuationConfig();
 
             OfflinePunctuationModelConfig opmc = new OfflinePunctuationModelConfig();
-            opmc.CtTransformer = pathRoot + "/sherpa-onnx-punct-ct-transformer-zh-en-vocab272727-2024-04-12/model.onnx";
+            opmc.CtTransformer = Util.GetPath() + "/punctuation/sherpa-onnx-punct-ct-transformer-zh-en-vocab272727-2024-04-12-int8/model.int8.onnx";
             opmc.NumThreads = numThreads;
             opmc.Provider = "cpu";
             opmc.Debug = 0;
@@ -90,7 +89,6 @@ namespace SherpaOnnxUnity
         {
             if (!initDone)
             {
-                Debug.Log("Model is not ready yet.");
                 return;
             }
             onlineStream.AcceptWaveform(sampleRate, input);
