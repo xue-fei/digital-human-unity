@@ -1,6 +1,9 @@
 
+.vs
 .vsconfig
 Library
+
+obj
 Logs
 Temp
 *.sln
@@ -8,3 +11,4 @@ Temp
 *.csproj
 Assets/StreamingAssets/asr
 Assets/StreamingAssets/tts
+Assets/StreamingAssets/punctuation
