@@ -10,5 +10,4 @@ Temp
 *.dwlt
 *.csproj
 Assets/StreamingAssets/asr
-Assets/StreamingAssets/tts
 Assets/StreamingAssets/punctuation/sherpa-onnx-punct-ct-transformer-zh-en-vocab272727-2024-04-12
