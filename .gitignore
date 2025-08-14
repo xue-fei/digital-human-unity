@@ -6,3 +6,5 @@ Temp
 *.sln
 *.dwlt
 *.csproj
+Assets/StreamingAssets/asr
+Assets/StreamingAssets/tts
