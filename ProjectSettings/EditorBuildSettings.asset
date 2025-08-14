@@ -4,5 +4,8 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/digital-human-unity.unity
+    guid: acdd07b599977d547a6ed670e168138e
   m_configObjects: {}
