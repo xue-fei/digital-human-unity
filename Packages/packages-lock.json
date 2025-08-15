@@ -1,5 +1,12 @@
 {
   "dependencies": {
+    "cn.net.xuefei.ollamasharp-unity": {
+      "version": "https://github.com/xue-fei/ollamasharp-unity.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "6385c5315fe17f0fe183b9212e72cd50f7d8a52a"
+    },
     "com.hecomi.umicrophonewebgl": {
       "version": "https://gitee.com/awnuxcvbn/uMicrophoneWebGL.git",
       "depth": 0,

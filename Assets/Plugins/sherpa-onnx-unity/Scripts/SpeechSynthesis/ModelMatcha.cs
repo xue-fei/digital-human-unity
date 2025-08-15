@@ -7,8 +7,7 @@ using System.Runtime.InteropServices;
 using UnityEngine;
 
 namespace SherpaOnnxUnity
-{
-    [RequireComponent(typeof(AudioSource))]
+{ 
     public class ModelMatcha : SpeechSynthesis
     {
         OfflineTts ot;
@@ -16,7 +15,7 @@ namespace SherpaOnnxUnity
         OfflineTtsConfig config;
         OfflineTtsCallback otc;
         static ModelMatcha Instance;
-        AudioSource audioSource;
+        public AudioSource audioSource;
         int SampleRate = 22050;
         AudioClip audioClip = null;
         List<float> audioData = new List<float>();

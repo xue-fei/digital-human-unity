@@ -1,5 +1,11 @@
-# digital-human-unity
-digital-human-unity
+# digital-human-unity    
+digital-human-unity      
+
+https://github.com/xue-fei/soundflow-unity.git     
+
+https://github.com/xue-fei/sherpa-onnx-unity.git  
+
+https://github.com/xue-fei/ollamasharp-unity.git  
 
 https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-streaming-conformer-zh-2023-05-23.tar.bz2  
 

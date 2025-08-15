@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "cn.net.xuefei.ollamasharp-unity": "https://github.com/xue-fei/ollamasharp-unity.git",
     "com.hecomi.umicrophonewebgl": "https://gitee.com/awnuxcvbn/uMicrophoneWebGL.git",
     "com.unity.ide.visualstudio": "2.0.23",
     "com.unity.ugui": "1.0.0",
