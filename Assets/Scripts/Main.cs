@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using uMicrophoneWebGL;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Main : MonoBehaviour
 {
@@ -11,6 +12,8 @@ public class Main : MonoBehaviour
     public AudioSource audioSource;
     public SpeechRecognition speechRecognition;
     public ModelMatcha speechSynthesis;
+    public Text text;
+
     OllamaSharpUnity ollama;
     Dictionary<int, TtsData> audioDic = new Dictionary<int, TtsData>();
 
@@ -40,11 +43,13 @@ public class Main : MonoBehaviour
     private void OnResult(string result)
     {
         //Debug.Log(result);
+        //text.text = result;
     }
 
     private void OnResultEnd(string result)
     {
-        Debug.Log(result);
+        // Debug.Log(result);
+        text.text = result;
         ollama.RequestAsync(result);
     }
 
@@ -112,6 +117,7 @@ public class Main : MonoBehaviour
                 }
                 else
                 {
+                    text.text = data.content;
                     audioSource.clip = GetAudioClip(data.audioPath);
                     audioSource.Play();
                 }

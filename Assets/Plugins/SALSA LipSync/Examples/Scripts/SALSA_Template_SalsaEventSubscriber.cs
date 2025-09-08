@@ -33,7 +33,7 @@ namespace DemoCode
             if (e.salsaInstance == salsa)
             {
                 // do some stuff...
-                Debug.Log("SALSA fired OnStartedSalsaing for: " + e.salsaInstance.name);
+                // Debug.Log("SALSA fired OnStartedSalsaing for: " + e.salsaInstance.name);
             }
         }
     }
