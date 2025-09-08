@@ -48,6 +48,13 @@ public class Main : MonoBehaviour
 
     private void OnResultEnd(string result)
     {
+        ollama.Interrupt();
+        if (audioSource != null &&
+            audioSource.clip != null
+            && audioSource.isPlaying)
+        {
+            audioSource.Stop();
+        }
         // Debug.Log(result);
         text.text = result;
         ollama.RequestAsync(result);
