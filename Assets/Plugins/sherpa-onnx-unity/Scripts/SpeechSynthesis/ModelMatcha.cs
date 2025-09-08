@@ -1,67 +1,38 @@
-using AOT;
 using SherpaOnnx;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Runtime.InteropServices;
 using UnityEngine;
 
 namespace SherpaOnnxUnity
-{ 
+{
     public class ModelMatcha : SpeechSynthesis
     {
         OfflineTts ot;
         OfflineTtsGeneratedAudio otga;
         OfflineTtsConfig config;
-        OfflineTtsCallback otc;
-        static ModelMatcha Instance;
-        public AudioSource audioSource;
-        int SampleRate = 22050;
-        AudioClip audioClip = null;
-        List<float> audioData = new List<float>();
-        /// <summary>
-        /// 当前要读取的索引位置
-        /// </summary>
-        int curAudioClipPos = 0;
-
         public bool initDone = false;
-
-        public float audioLength = 0f;
         public Action OnAudioEnd;
+        public int sampleRate;
         string pathRoot;
+        string tempAudioPath;
 
         // Start is called before the first frame update
         void Start()
         {
-            pathRoot = Util.GetPath() + "/models";
-            audioSource = GetComponent<AudioSource>();
+            tempAudioPath = Application.streamingAssetsPath + "/temp";
+            if (!Directory.Exists(tempAudioPath))
+            {
+                Directory.CreateDirectory(tempAudioPath);
+            }
+            pathRoot = Util.GetPath() + "/tts";
             Loom.RunAsync(() =>
             {
                 Init();
             });
         }
 
-        // Update is called once per frame
-        void Update()
-        {
-            if (audioLength > 0)
-            {
-                audioLength -= Time.deltaTime;
-                if (audioLength < 0)
-                {
-                    audioLength = 0;
-                    Debug.Log("音频播放完毕");
-                    if (OnAudioEnd != null)
-                    {
-                        OnAudioEnd();
-                    }
-                }
-            }
-        }
-
         void Init()
         {
-            Instance = this;
             initDone = false;
             config = new OfflineTtsConfig();
             config.Model.Matcha.AcousticModel = Path.Combine(pathRoot, "matcha-icefall-zh-baker/model-steps-3.onnx");
@@ -78,16 +49,22 @@ namespace SherpaOnnxUnity
                     + pathRoot + "/matcha-icefall-zh-baker/number.fst";
             config.MaxNumSentences = 1;
             ot = new OfflineTts(config);
-            SampleRate = ot.SampleRate;
-            otc = new OfflineTtsCallback(OnStaticAudioData);
+            sampleRate = ot.SampleRate;
             initDone = true;
             Loom.QueueOnMainThread(() =>
             {
-                Debug.Log("文字转语音初始化完成");
+                Debug.Log("文字转语音初始化完成 sampleRate:" + sampleRate);
             });
         }
 
-        public override void Generate(string text, float speed, int speakerId)
+        Action<string, int, string> callback; 
+        public void Generate(string text, int index, Action<string, int, string> callback)
+        {
+            this.callback = callback; 
+            Generate(text, index);
+        }
+
+        public override void Generate(string text, int index, float speed = 1, int speakerId = 0)
         {
             if (!initDone)
             {
@@ -96,83 +73,23 @@ namespace SherpaOnnxUnity
             }
             Loom.RunAsync(() =>
             {
-                otga = ot.GenerateWithCallback(text, speed, speakerId, otc);
-            });
-        }
-
-        [MonoPInvokeCallback(typeof(OfflineTtsCallback))]
-        static int OnStaticAudioData(IntPtr samples, int n)
-        {
-            return Instance.OnAudioData(samples, n);
-        }
-
-        private int OnAudioData(IntPtr samples, int n)
-        {
-            float[] tempData = new float[n];
-            Marshal.Copy(samples, tempData, 0, n);
-            audioData.AddRange(tempData);
-            Loom.QueueOnMainThread(() =>
-            {
-                Debug.Log("n:" + n);
-                audioLength += (float)n / (float)SampleRate;
-                Debug.Log("音频长度增加 " + (float)n / (float)SampleRate + "秒");
-
-                if (!audioSource.isPlaying && audioData.Count > SampleRate * 2)
+                otga = ot.Generate(text, speed, speakerId);
+                string filePath = tempAudioPath + "/" + DateTime.Now.ToFileTime() + ".wav";
+                if (otga.SaveToWaveFile(filePath))
                 {
-                    audioClip = AudioClip.Create("SynthesizedAudio", SampleRate * 2, 1,
-                        SampleRate, true, (float[] data) =>
-                        {
-                            ExtractAudioData(data);
-                        });
-                    audioSource.clip = audioClip;
-                    audioSource.loop = true;
-                    audioSource.Play();
+                    if (callback != null)
+                    {
+                        callback(filePath, index, text);
+                    }
                 }
             });
-            return n;
-        }
-
-        bool ExtractAudioData(float[] data)
-        {
-            if (data == null || data.Length == 0)
-            {
-                return false;
-            }
-            bool hasData = false;//是否真的读取到数据
-            int dataIndex = 0;//当前要写入的索引位置
-            if (audioData != null && audioData.Count > 0)
-            {
-                while (curAudioClipPos < audioData.Count && dataIndex < data.Length)
-                {
-                    data[dataIndex] = audioData[curAudioClipPos];
-                    curAudioClipPos++;
-                    dataIndex++;
-                    hasData = true;
-                }
-            }
-
-            //剩余部分填0
-            while (dataIndex < data.Length)
-            {
-                data[dataIndex] = 0;
-                dataIndex++;
-            }
-            return hasData;
         }
 
         private void OnDestory()
         {
-            if (audioSource != null && audioSource.isPlaying)
-            {
-                audioSource.Stop();
-            }
             if (ot != null)
             {
                 ot.Dispose();
-            }
-            if (otc != null)
-            {
-                otc = null;
             }
             if (otga != null)
             {

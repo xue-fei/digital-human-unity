@@ -1,8 +1,6 @@
 # digital-human-unity    
 digital-human-unity      
-
-https://github.com/xue-fei/soundflow-unity.git     
-
+  
 https://github.com/xue-fei/sherpa-onnx-unity.git  
 
 https://github.com/xue-fei/ollamasharp-unity.git  

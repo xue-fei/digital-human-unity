@@ -89,7 +89,7 @@ namespace SherpaOnnxUnity
             });
         }
 
-        public override void Generate(string text, float speed, int speakerId)
+        public override void Generate(string text, int index, float speed, int speakerId)
         {
             if (!initDone)
             {

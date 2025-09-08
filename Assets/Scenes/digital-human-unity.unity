@@ -294,8 +294,8 @@ GameObject:
   - component: {fileID: 259465916}
   - component: {fileID: 259465915}
   - component: {fileID: 259465917}
-  - component: {fileID: 259465918}
   - component: {fileID: 259465919}
+  - component: {fileID: 259465920}
   m_Layer: 0
   m_Name: Main
   m_TagString: Untagged
@@ -315,7 +315,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0429177ba58bff48a2f963ad82e7a8a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  microphoneWebGL: {fileID: 259465920}
+  audioSource: {fileID: 1077820810}
   speechRecognition: {fileID: 259465917}
+  speechSynthesis: {fileID: 259465919}
 --- !u!4 &259465916
 Transform:
   m_ObjectHideFlags: 0
@@ -344,7 +347,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   initDone: 0
---- !u!114 &259465918
+--- !u!114 &259465919
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 259465914}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4122a4739bfd244fafee2822a82164a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  initDone: 0
+--- !u!114 &259465920
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -356,8 +372,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65bfef609686d44c69d900c6e5df8ba0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isAutoStart: 1
+  isAutoStart: 0
   micIndex: 0
+  bufferSize: 256
   readyEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -373,21 +390,6 @@ MonoBehaviour:
   dataEvent:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &259465919
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 259465914}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4122a4739bfd244fafee2822a82164a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  audioSource: {fileID: 0}
-  initDone: 0
-  audioLength: 0
 --- !u!1 &310533620
 GameObject:
   m_ObjectHideFlags: 0
@@ -2361,7 +2363,7 @@ AudioSource:
   SpatializePostEffects: 0
   Priority: 128
   DopplerLevel: 1
-  MinDistance: 1
+  MinDistance: 9.36453
   MaxDistance: 500
   Pan2D: 0
   rolloffMode: 0

@@ -13,7 +13,7 @@ namespace SherpaOnnxUnity
         /// <param name="text">文本</param>
         /// <param name="speed">速度</param>
         /// <param name="speakerId">说话人id</param>
-        public virtual void Generate(string text, float speed, int speakerId)
+        public virtual void Generate(string text, int index, float speed, int speakerId)
         {
 
         }

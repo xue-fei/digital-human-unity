@@ -121,7 +121,7 @@ namespace SherpaOnnxUnity
                 if (string.IsNullOrWhiteSpace(lastText))
                 {
                     lastText = temp;
-                    Debug.Log(lastText.ToLower());
+                    //Debug.Log(lastText.ToLower());
                 }
                 else
                 {

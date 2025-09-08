@@ -24,7 +24,7 @@ public class SpeechSynthesisSample : MonoBehaviour
             }
             int id = 0;
             int.TryParse(inputFieldSpeakerId.text, out id);
-            speechSynthesis.Generate(inputFieldContent.text, 1.0f, id);
+            speechSynthesis.Generate(inputFieldContent.text, 0, 1.0f, id);
         });
     }
 }
