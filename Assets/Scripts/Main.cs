@@ -2,6 +2,7 @@ using SherpaOnnxUnity;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using uMicrophoneWebGL;
 using UnityEngine;
 using UnityEngine.UI;
@@ -20,13 +21,15 @@ public class Main : MonoBehaviour
 
     static bool isPlay = false;
 
-    List<float> mic = new List<float>();
-    List<float> lpb = new List<float>();
-    List<float> output = new List<float>();
+    //List<float> mic = new List<float>();
+    //List<float> lpb = new List<float>();
+    //List<float> output = new List<float>();
 
     // Start is called before the first frame update
     void Start()
     {
+        Application.targetFrameRate = 60;
+
         // 设置音频 2声道 16000 Best latency
         AudioConfiguration config = AudioSettings.GetConfiguration();
         config.sampleRate = 16000;
@@ -56,9 +59,9 @@ public class Main : MonoBehaviour
     float[] processedFrame;
     private void OnData(float[] data)
     {
-#if UNITY_EDITOR
-        mic.AddRange(data);
-#endif
+        //#if UNITY_EDITOR
+        //        mic.AddRange(data);
+        //#endif
         if (farQueue.Count >= 128)
         {
             for (int i = 0; i < temp.Length; i++)
@@ -67,9 +70,10 @@ public class Main : MonoBehaviour
             }
         }
         processedFrame = dtlnaecProcessor.ProcessFrame(data, temp);
-#if UNITY_EDITOR
-        output.AddRange(processedFrame);
-#endif
+        //#if UNITY_EDITOR
+        //        output.AddRange(processedFrame);
+        //#endif
+
         if (speechRecognition != null)
         {
             speechRecognition.RecognizeOnline(16000, processedFrame);
@@ -83,7 +87,11 @@ public class Main : MonoBehaviour
     {
         if (isPlay)
         {
-            //Debug.Log(data.Length);
+            if (data.Length != 512)
+            {
+                Debug.LogWarning(data.Length);
+                return;
+            }
             if (channels == 1)
             {
                 tempData = data;
@@ -95,9 +103,9 @@ public class Main : MonoBehaviour
                     tempData[i] = data[i * 2];
                 }
             }
-#if UNITY_EDITOR
-            lpb.AddRange(tempData);
-#endif
+            //#if UNITY_EDITOR
+            //            lpb.AddRange(tempData);
+            //#endif
             for (int i = 0; i < tempData.Length; i++)
             {
                 tempData[i] = tempData[i] * 0.25f;
@@ -114,15 +122,20 @@ public class Main : MonoBehaviour
 
     private void OnResultEnd(string result)
     {
+        audioDic.Clear();
+        audioEnd = true;
         ollama.Interrupt();
         if (audioSource != null &&
             audioSource.clip != null
             && audioSource.isPlaying)
         {
+            Destroy(audioSource.clip);
             audioSource.Stop();
         }
         // Debug.Log(result);
+        text.text = "";
         text.text = result;
+
         ollama.RequestAsync(result);
     }
 
@@ -134,19 +147,24 @@ public class Main : MonoBehaviour
     public int audioIndex = 0;
     private void OnSentence(string sentence)
     {
-        speechSynthesis.Generate(sentence, audioIndex, (audioPath, index, msg) =>
-           {
-               Loom.QueueOnMainThread(() =>
-               {
-                   Debug.Log("OnSentence:" + sentence);
-                   TtsData data = new TtsData();
-                   data.audioPath = audioPath;
-                   data.content = msg;
-                   audioDic.Add(index, data);
-                   PlayTtsData();
-               });
-           });
-        audioIndex++;
+        Loom.RunAsync(() =>
+        {
+            speechSynthesis.Generate(sentence, audioIndex, OnGenerate);
+            audioIndex++;
+        });
+    }
+
+    void OnGenerate(string audioPath, int index, string msg)
+    {
+        Loom.QueueOnMainThread(() =>
+        {
+            //Debug.Log("OnSentence:" + sentence);
+            TtsData data = new TtsData();
+            data.audioPath = audioPath;
+            data.content = msg;
+            audioDic.Add(index, data);
+            PlayTtsData();
+        });
     }
 
     bool audioEnd = false;
@@ -209,21 +227,27 @@ public class Main : MonoBehaviour
         return audioClip;
     }
 
+    private void OnApplicationQuit()
+    {
+
+    }
+
     private void OnDestroy()
     {
+        isPlay = false;
         if (ollama != null)
         {
             ollama.Stop();
         }
         if (dtlnaecProcessor != null)
         {
-#if UNITY_EDITOR
-            float[] end = dtlnaecProcessor.Flush();
-            output.AddRange(end);
-            Util.SaveClip(1, 16000, output.ToArray(), Application.dataPath + "/output.wav");
-            Util.SaveClip(1, 16000, mic.ToArray(), Application.dataPath + "/mic.wav");
-            Util.SaveClip(1, 16000, lpb.ToArray(), Application.dataPath + "/lpb.wav");
-#endif
+            //#if UNITY_EDITOR
+            //            float[] end = dtlnaecProcessor.Flush();
+            //            output.AddRange(end);
+            //            Util.SaveClip(1, 16000, output.ToArray(), Application.dataPath + "/output.wav");
+            //            Util.SaveClip(1, 16000, mic.ToArray(), Application.dataPath + "/mic.wav");
+            //            Util.SaveClip(1, 16000, lpb.ToArray(), Application.dataPath + "/lpb.wav");
+            //#endif
             dtlnaecProcessor.Dispose();
         }
     }

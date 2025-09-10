@@ -98,9 +98,11 @@ namespace SherpaOnnxUnity
             {
                 return;
             }
-            onlineStream.AcceptWaveform(sampleRate, input);
+             onlineStream.AcceptWaveform(sampleRate, input); 
         }
 
+        private float timer = 0f;
+        private float interval = 0.2f;
         string temp = "";
         string lastText = "";
         bool isEndpoint = false;
@@ -110,40 +112,45 @@ namespace SherpaOnnxUnity
             {
                 return;
             }
-            if (recognizer.IsReady(onlineStream))
+            timer += Time.deltaTime;
+            if (timer >= interval)
             {
-                recognizer.Decode(onlineStream);
-            }
-            temp = recognizer.GetResult(onlineStream).Text;
-            isEndpoint = recognizer.IsEndpoint(onlineStream);
-            if (!string.IsNullOrWhiteSpace(temp) && lastText != temp)
-            {
-                if (string.IsNullOrWhiteSpace(lastText))
+                if (recognizer.IsReady(onlineStream))
                 {
-                    lastText = temp;
-                    //Debug.Log(lastText.ToLower());
+                    recognizer.Decode(onlineStream);
                 }
-                else
+                temp = recognizer.GetResult(onlineStream).Text;
+                isEndpoint = recognizer.IsEndpoint(onlineStream);
+                if (!string.IsNullOrWhiteSpace(temp) && lastText != temp)
                 {
-                    lastText = temp;
-                    if (onResult != null)
+                    if (string.IsNullOrWhiteSpace(lastText))
                     {
-                        onResult(lastText);
+                        lastText = temp;
+                        //Debug.Log(lastText.ToLower());
+                    }
+                    else
+                    {
+                        lastText = temp;
+                        if (onResult != null)
+                        {
+                            onResult(lastText);
+                        }
                     }
                 }
-            }
 
-            if (isEndpoint)
-            {
-                if (!string.IsNullOrWhiteSpace(temp))
+                if (isEndpoint)
                 {
-                    temp = offlinePunctuation.AddPunct(temp);
-                    if (onResultEnd != null)
+                    if (!string.IsNullOrWhiteSpace(temp))
                     {
-                        onResultEnd(temp);
+                        temp = offlinePunctuation.AddPunct(temp);
+                        if (onResultEnd != null)
+                        {
+                            onResultEnd(temp);
+                        }
                     }
+                    recognizer.Reset(onlineStream);
                 }
-                recognizer.Reset(onlineStream);
+                timer = 0;
             }
         }
     }
