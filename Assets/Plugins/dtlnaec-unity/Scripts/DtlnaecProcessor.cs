@@ -1,11 +1,12 @@
-using System;
-using System.Linq;
-using System.Numerics;
-using System.Collections.Generic;
+using MathNet.Numerics.IntegralTransforms;
 using Microsoft.ML.OnnxRuntime;
 using Microsoft.ML.OnnxRuntime.Tensors;
-using MathNet.Numerics.IntegralTransforms;
-using UnityEngine;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Numerics;
+using Debug = UnityEngine.Debug;
 
 public class DtlnaecProcessor
 {
@@ -110,6 +111,7 @@ public class DtlnaecProcessor
     /// <returns>Processed audio frame (BlockShift samples) or null if not enough data</returns>
     public float[] ProcessFrame(float[] micFrame, float[] lpbFrame)
     {
+        //var stopwatch = Stopwatch.StartNew();
         if (micFrame.Length != BlockShift || lpbFrame.Length != BlockShift)
         {
             Debug.LogError($"Input frames must be exactly {BlockShift} samples");
@@ -147,6 +149,8 @@ public class DtlnaecProcessor
         Array.Copy(processedBlock, 0, outputFrame, 0, BlockShift);
 
         _framesProcessed++;
+        //stopwatch.Stop();
+        //Debug.Log($"[DTLN-AEC] ProcessFrame (processed) - Took {stopwatch.ElapsedMilliseconds} ms ({stopwatch.ElapsedTicks} ticks)");
         return outputFrame;
     }
 

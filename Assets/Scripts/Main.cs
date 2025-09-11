@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Threading.Tasks;
 using uMicrophoneWebGL;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,7 +13,7 @@ public class Main : MonoBehaviour
     DtlnaecProcessor dtlnaecProcessor;
     public MicrophoneWebGL microphoneWebGL;
     public AudioSource audioSource;
-    public SpeechRecognition speechRecognition;
+    public OnlineHotwords speechRecognition;
     public ModelMatcha speechSynthesis;
     public Text text;
 
@@ -21,9 +22,9 @@ public class Main : MonoBehaviour
 
     static bool isPlay = false;
 
-    //List<float> mic = new List<float>();
-    //List<float> lpb = new List<float>();
-    //List<float> output = new List<float>();
+    List<float> mic = new List<float>();
+    List<float> lpb = new List<float>();
+    List<float> output = new List<float>();
 
     // Start is called before the first frame update
     void Start()
@@ -59,24 +60,27 @@ public class Main : MonoBehaviour
     float[] processedFrame;
     private void OnData(float[] data)
     {
-        //#if UNITY_EDITOR
-        //        mic.AddRange(data);
-        //#endif
-        if (farQueue.Count >= 128)
+        if (speechRecognition.initDone && speechSynthesis.initDone)
         {
-            for (int i = 0; i < temp.Length; i++)
+#if UNITY_EDITOR
+            mic.AddRange(data);
+#endif
+            if (farQueue.Count >= 128)
             {
-                temp[i] = farQueue.Dequeue();
+                for (int i = 0; i < temp.Length; i++)
+                {
+                    temp[i] = farQueue.Dequeue();
+                }
             }
-        }
-        processedFrame = dtlnaecProcessor.ProcessFrame(data, temp);
-        //#if UNITY_EDITOR
-        //        output.AddRange(processedFrame);
-        //#endif
+            processedFrame = dtlnaecProcessor.ProcessFrame(data, temp);
+#if UNITY_EDITOR
+            output.AddRange(processedFrame);
+#endif
 
-        if (speechRecognition != null)
-        {
-            speechRecognition.RecognizeOnline(16000, processedFrame);
+            if (speechRecognition != null)
+            {
+                speechRecognition.RecognizeOnline(16000, processedFrame);
+            }
         }
     }
 
@@ -103,9 +107,9 @@ public class Main : MonoBehaviour
                     tempData[i] = data[i * 2];
                 }
             }
-            //#if UNITY_EDITOR
-            //            lpb.AddRange(tempData);
-            //#endif
+#if UNITY_EDITOR
+            lpb.AddRange(tempData);
+#endif
             for (int i = 0; i < tempData.Length; i++)
             {
                 tempData[i] = tempData[i] * 0.25f;
@@ -124,6 +128,9 @@ public class Main : MonoBehaviour
     {
         audioDic.Clear();
         audioEnd = true;
+        nowIndex = 0;
+        audioIndex = 0;
+
         ollama.Interrupt();
         if (audioSource != null &&
             audioSource.clip != null
@@ -135,8 +142,11 @@ public class Main : MonoBehaviour
         // Debug.Log(result);
         text.text = "";
         text.text = result;
-
-        ollama.RequestAsync(result);
+        Task task = new Task(() =>
+        {
+            ollama.RequestAsync(result);
+        });
+        task.Start();
     }
 
     private void OnWord(string word)
@@ -241,13 +251,13 @@ public class Main : MonoBehaviour
         }
         if (dtlnaecProcessor != null)
         {
-            //#if UNITY_EDITOR
-            //            float[] end = dtlnaecProcessor.Flush();
-            //            output.AddRange(end);
-            //            Util.SaveClip(1, 16000, output.ToArray(), Application.dataPath + "/output.wav");
-            //            Util.SaveClip(1, 16000, mic.ToArray(), Application.dataPath + "/mic.wav");
-            //            Util.SaveClip(1, 16000, lpb.ToArray(), Application.dataPath + "/lpb.wav");
-            //#endif
+#if UNITY_EDITOR
+            float[] end = dtlnaecProcessor.Flush();
+            output.AddRange(end);
+            Util.SaveClip(1, 16000, output.ToArray(), Application.dataPath + "/output.wav");
+            Util.SaveClip(1, 16000, mic.ToArray(), Application.dataPath + "/mic.wav");
+            Util.SaveClip(1, 16000, lpb.ToArray(), Application.dataPath + "/lpb.wav");
+#endif
             dtlnaecProcessor.Dispose();
         }
     }

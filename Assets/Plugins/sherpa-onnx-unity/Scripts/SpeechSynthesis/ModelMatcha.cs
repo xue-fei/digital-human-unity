@@ -19,7 +19,7 @@ namespace SherpaOnnxUnity
         // Start is called before the first frame update
         void Start()
         {
-            tempAudioPath = Application.streamingAssetsPath + "/temp";
+            tempAudioPath = Application.persistentDataPath + "/temp";
             if (!Directory.Exists(tempAudioPath))
             {
                 Directory.CreateDirectory(tempAudioPath);
