@@ -14,3 +14,5 @@ https://github.com/k2-fsa/sherpa-onnx/releases/download/punctuation-models/sherp
 https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/matcha-icefall-zh-baker.tar.bz2  这个模型不支持英文  
 
 StreamingAssets\asr\sherpa-onnx-streaming-conformer-zh-2023-05-23\encoder-epoch-99-avg-1.int8.zip 需解压到当前文件夹  
+
+需安装 Ollama https://ollama.com/download   
