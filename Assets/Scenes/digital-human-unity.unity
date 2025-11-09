@@ -446,7 +446,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isAutoStart: 0
-  micIndex: 0
+  micIndex: 1
   bufferSize: 256
   readyEvent:
     m_PersistentCalls:

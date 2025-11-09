@@ -43,7 +43,7 @@ public class Main : MonoBehaviour
             speechRecognition.onResult += OnResult;
             speechRecognition.onResultEnd += OnResultEnd;
         }
-        ollama = new OllamaSharpUnity("http://localhost:11434", "deepseek-r1:1.5b", OnWord, OnSentence);
+        ollama = new OllamaSharpUnity("http://localhost:11434", "qwen3:0.6b", OnWord, OnSentence);
 
         dtlnaecProcessor = new DtlnaecProcessor();
         dtlnaecProcessor.Initialize(Application.streamingAssetsPath + "/dtlnaec/dtln_aec_128_1.onnx",
@@ -120,8 +120,11 @@ public class Main : MonoBehaviour
 
     private void OnResult(string result)
     {
-        //Debug.Log(result);
-        //text.text = result;
+        Loom.QueueOnMainThread(() =>
+        {
+            //Debug.Log(result);
+            //text.text = result;
+        });
     }
 
     private void OnResultEnd(string result)
@@ -132,21 +135,31 @@ public class Main : MonoBehaviour
         audioIndex = 0;
 
         ollama.Interrupt();
-        if (audioSource != null &&
-            audioSource.clip != null
-            && audioSource.isPlaying)
+
+        Loom.QueueOnMainThread(() =>
         {
-            Destroy(audioSource.clip);
-            audioSource.Stop();
-        }
-        // Debug.Log(result);
-        text.text = "";
-        text.text = result;
-        Task task = new Task(() =>
+            if (audioSource != null &&
+           audioSource.clip != null
+           && audioSource.isPlaying)
+            {
+                Destroy(audioSource.clip);
+                audioSource.Stop();
+            }
+            Debug.Log(result);
+            text.text = "";
+            text.text = result; 
+        });
+
+        Loom.RunAsync(() =>
         {
             ollama.RequestAsync(result);
         });
-        task.Start();
+
+        //Task task = new Task(() =>
+        //{
+        //    ollama.RequestAsync(result);
+        //});
+        //task.Start();
     }
 
     private void OnWord(string word)
