@@ -43,7 +43,7 @@ public class Main : MonoBehaviour
             speechRecognition.onResult += OnResult;
             speechRecognition.onResultEnd += OnResultEnd;
         }
-        ollama = new OllamaSharpUnity("http://localhost:11434", "qwen2.5:1.5b", OnWord, OnSentence);
+        ollama = new OllamaSharpUnity("http://localhost:11434", "deepseek-r1:1.5b", OnWord, OnSentence);
 
         dtlnaecProcessor = new DtlnaecProcessor();
         dtlnaecProcessor.Initialize(Application.streamingAssetsPath + "/dtlnaec/dtln_aec_128_1.onnx",
