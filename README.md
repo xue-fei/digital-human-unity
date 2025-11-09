@@ -13,4 +13,4 @@ https://github.com/k2-fsa/sherpa-onnx/releases/download/punctuation-models/sherp
 
 https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/matcha-icefall-zh-baker.tar.bz2  这个模型不支持英文  
 
-需安装 Ollama https://ollama.com/download   
+需安装 Ollama https://ollama.com/download   然后cmd中执行 ollama run qwen3:0.6b   
